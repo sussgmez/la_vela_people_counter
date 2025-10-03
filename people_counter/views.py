@@ -19,6 +19,39 @@ class HomeView(TemplateView):
 class EntranceView(TemplateView):
     template_name = "people_counter/entrance.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        entrance = Entrance.objects.get(id=self.request.GET["entrance"])
+
+        try:
+            enter = entrance.reports.get(
+                date=datetime.today() - timedelta(days=1), direction="entran"
+            )
+            enter_details = list(
+                ReportDetail.objects.filter(report=enter).values_list(
+                    "quantity", flat=True
+                )
+            )
+        except:
+            enter = None
+            enter_details = None
+
+        try:
+            exit = entrance.reports.get(
+                date=datetime.today() - timedelta(days=1), direction="salen"
+            )
+        except:
+            exit = None
+
+        print(enter)
+        print(enter_details)
+        print(exit)
+
+        context["enter_details"] = enter_details
+
+        return context
+
 
 def upload_file(request: WSGIRequest):
 

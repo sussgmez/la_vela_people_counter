@@ -1,3 +1,7 @@
+<div id="lineChart">{{ enter_details }}</div>
+
 <script>
-  console.log('test')
+  var trace1 = {
+    y: JSON.parse('{{ enter_details|safe }}')
+  }
 </script>
