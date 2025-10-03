@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+  <section class="py-8 px-4 max-w-6xl m-auto">
+    <div hx-get="{% url 'upload-file' %}" hx-trigger="load" class=""></div>
+
+    <hr class="my-4 border-gray-300" />
+
+    <div class="">
+      <form hx-get="{% url 'entrance' %}" hx-trigger="load, change from:#entrance-filter, change from:#day, change from:#week, change from:#month " hx-target="#entrance" class="flex items-center gap-1">
+        <select name="entrance" id="entrance-filter" class="border border-gray-200 rounded p-1 text-sm h-[38px] pr-8">
+          {% for entrance in entrances %}
+            <option value="{{ entrance.id }}">{{ entrance.name }}</option>
+          {% endfor %}
+        </select>
+        <div class="flex p-0.5 gap-1 border border-gray-200 rounded">
+          <div class="">
+            <input class="hidden peer" type="radio" name="range" id="day" value="day" checked />
+            <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="day">1D</label>
+          </div>
+          <div class="">
+            <input class="hidden peer" type="radio" name="range" id="week" value="week" />
+            <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="week">7D</label>
+          </div>
+          <div class="">
+            <input class="hidden peer" type="radio" name="range" id="month" value="month" />
+            <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="month">1M</label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div id="entrance"></div>
+  </section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% load static tailwind_tags %}
+{% load django_htmx %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% htmx_script %}
+    {% tailwind_css %}
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+    <title>La Vela</title>
+  </head>
+  <body>
+    {% include 'components/header.html' %}
+
+    {% block content %}
+
+    {% endblock %}
+  </body>
+</html>
