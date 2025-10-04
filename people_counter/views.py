@@ -35,19 +35,9 @@ class EntranceView(TemplateView):
             )
         except:
             enter = None
-            enter_details = None
+            enter_details = []
 
-        try:
-            exit = entrance.reports.get(
-                date=datetime.today() - timedelta(days=1), direction="salen"
-            )
-        except:
-            exit = None
-
-        print(enter)
-        print(enter_details)
-        print(exit)
-
+        context["labels"] = [x for x in range(0, 24)]
         context["enter_details"] = enter_details
 
         return context
