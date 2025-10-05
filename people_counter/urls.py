@@ -12,5 +12,10 @@ urlpatterns = [
         login_required(views.EntranceView.as_view()),
         name="entrance",
     ),
+    path(
+        "entrances/",
+        login_required(views.EntrancesView.as_view()),
+        name="entrances",
+    ),
     path("upload-file/", login_required(views.upload_file), name="upload-file"),
 ]

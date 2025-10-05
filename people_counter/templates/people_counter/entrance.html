@@ -1,36 +1,38 @@
-<div class="!w-full !h-full mb-4 flex-4">
+{% load people_counter_extras %}
+
+<div class="!w-full !h-96 lg:!h-128 mb-4 flex-4">
   <canvas id="lineChart"></canvas>
 </div>
 <div class="grid grid-cols-2 gap-1 lg:grid-cols-1 h-fit flex-1">
   <div class="h-20 w-full border border-sky-200 rounded p-3 bg-gradient-to-br from-sky-50 to-sky-100">
     <p class="text-sky-800 font-semibold text-sm">Total entradas</p>
-    <p class="text-2xl font-light">{{ enter_report.total }}</p>
+    <p class="text-2xl font-light">{{ enter_total }}</p>
   </div>
-  {% if enter_percentage < 0 %}
+  {% if enter_total < prev_enter_total %}
     <div class="h-20 w-full border border-red-200 rounded p-3 bg-gradient-to-br from-red-50 to-red-100">
-      <p class="text-red-800">{{ enter_percentage }} %</p>
-      <p class="text-xs text-red-400 font-semibold text-nowrap">Total entradas día anterior: {{ enter_report_before1.total }}</p>
+      <p class="text-red-800">{{ enter_total|get_rate:prev_enter_total }} %</p>
+      <p class="text-xs text-red-400 font-semibold text-nowrap">Total entradas día anterior: {{ prev_enter_total }}</p>
     </div>
   {% else %}
     <div class="h-20 w-full border border-green-200 rounded p-3 bg-gradient-to-br from-green-50 to-green-100">
-      <p class="text-green-800">+{{ enter_percentage }} %</p>
-      <p class="text-xs text-green-600 font-semibold text-nowrap">Total entradas día anterior: {{ enter_report_before1.total }}</p>
+      <p class="text-green-800">+{{ enter_total|get_rate:prev_enter_total }} %</p>
+      <p class="text-xs text-green-600 font-semibold text-nowrap">Total entradas día anterior: {{ prev_enter_total }}</p>
     </div>
   {% endif %}
 
   <div class="h-20 w-full border border-sky-200 rounded p-3 bg-gradient-to-br from-sky-50 to-sky-100">
     <p class="text-sky-800 font-semibold text-sm">Total salidas</p>
-    <p class="text-2xl font-light">{{ exit_report.total }}</p>
+    <p class="text-2xl font-light">{{ exit_total }}</p>
   </div>
-  {% if exit_percentage < 0 %}
+  {% if exit_total < prev_exit_total %}
     <div class="h-20 w-full border border-red-200 rounded p-3 bg-gradient-to-br from-red-50 to-red-100">
-      <p class="text-red-800">{{ exit_percentage }} %</p>
-      <p class="text-xs text-red-400 font-semibold text-nowrap">Total salidas día anterior: {{ exit_report_before1.total }}</p>
+      <p class="text-red-800">{{ exit_total|get_rate:prev_exit_total }} %</p>
+      <p class="text-xs text-red-400 font-semibold text-nowrap">Total salidas día anterior: {{ prev_exit_total }}</p>
     </div>
   {% else %}
     <div class="h-20 w-full border border-green-200 rounded p-3 bg-gradient-to-br from-green-50 to-green-100">
-      <p class="text-green-800">+{{ exit_percentage }} %</p>
-      <p class="text-xs text-green-600 font-semibold text-nowrap">Total salidas día anterior: {{ exit_report_before1.total }}</p>
+      <p class="text-green-800">+{{ exit_total|get_rate:prev_exit_total }} %</p>
+      <p class="text-xs text-green-600 font-semibold text-nowrap">Total salidas día anterior: {{ prev_exit_total }}</p>
     </div>
   {% endif %}
 </div>
@@ -43,13 +45,13 @@
     datasets: [
       {
         label: 'Entradas',
-        data: JSON.parse('{{ enter_reportdetails|safe }}'),
+        data: JSON.parse('{{ enter_data|safe }}'),
         borderColor: 'rgba(0, 99, 132, 0.85)',
         backgroundColor: 'rgba(0, 99, 132, 0.85)'
       },
       {
         label: 'Salidas',
-        data: JSON.parse('{{ exit_reportdetails|safe }}'),
+        data: JSON.parse('{{ exit_data|safe }}'),
         borderColor: 'rgba(255, 99, 132, 0.85)',
         backgroundColor: 'rgba(255, 99, 132, 0.85)'
       }

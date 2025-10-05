@@ -38,6 +38,9 @@ class Report(models.Model):
     def __str__(self):
         return f"{self.entrance.name} ({self.date})"
 
+    class Meta:
+        unique_together = ("date", "direction", "entrance")
+
 
 class ReportDetail(models.Model):
     report = models.ForeignKey(
