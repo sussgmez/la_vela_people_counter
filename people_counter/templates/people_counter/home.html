@@ -14,22 +14,24 @@
           {% endfor %}
         </select>
         <div class="flex p-0.5 gap-1 border border-gray-200 rounded">
-          <div class="">
+          <div>
             <input class="hidden peer" type="radio" name="range" id="day" value="day" checked />
             <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="day">1D</label>
           </div>
-          <div class="">
+          <div>
             <input class="hidden peer" type="radio" name="range" id="week" value="week" />
             <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="week">7D</label>
           </div>
-          <div class="">
+          {% comment %}
+          <div>
             <input class="hidden peer" type="radio" name="range" id="month" value="month" />
             <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="month">1M</label>
           </div>
+          {% endcomment %}
         </div>
       </form>
     </div>
 
-    <div id="entrance"></div>
+    <div id="entrance" class="!h-96 !w-full lg:!h-128 lg:flex"></div>
   </section>
 {% endblock %}

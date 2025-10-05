@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -24,21 +25,99 @@ class EntranceView(TemplateView):
 
         entrance = Entrance.objects.get(id=self.request.GET["entrance"])
 
-        try:
-            enter = entrance.reports.get(
-                date=datetime.today() - timedelta(days=1), direction="entran"
-            )
-            enter_details = list(
-                ReportDetail.objects.filter(report=enter).values_list(
-                    "quantity", flat=True
-                )
-            )
-        except:
-            enter = None
-            enter_details = []
+        date_range = self.request.GET["range"]
 
-        context["labels"] = [x for x in range(0, 24)]
-        context["enter_details"] = enter_details
+        if date_range == "day":
+
+            try:
+                enter_report = entrance.reports.get(
+                    date=datetime.today() - timedelta(days=1), direction="entran"
+                )
+                enter_report_before1 = entrance.reports.get(
+                    date=datetime.today() - timedelta(days=2), direction="entran"
+                )
+
+                enter_percentage = round(
+                    (
+                        (enter_report.total - enter_report_before1.total)
+                        / enter_report_before1.total
+                    )
+                    * 100,
+                    2,
+                )
+
+                enter_reportdetails = list(
+                    ReportDetail.objects.filter(report=enter_report).values_list(
+                        "quantity", flat=True
+                    )
+                )
+            except:
+                enter_report = None
+                enter_reportdetails = []
+
+            try:
+                exit_report = entrance.reports.get(
+                    date=datetime.today() - timedelta(days=1), direction="salen"
+                )
+                exit_report_before1 = entrance.reports.get(
+                    date=datetime.today() - timedelta(days=2), direction="salen"
+                )
+
+                exit_percentage = round(
+                    (
+                        (exit_report.total - exit_report_before1.total)
+                        / exit_report_before1.total
+                    )
+                    * 100,
+                    2,
+                )
+
+                exit_reportdetails = list(
+                    ReportDetail.objects.filter(report=exit_report).values_list(
+                        "quantity", flat=True
+                    )
+                )
+            except:
+                exit_report = None
+                exit_reportdetails = []
+
+            hours = [f"{x}:00" for x in range(1, 25)]
+
+            context["labels"] = json.dumps(hours)
+
+            context["enter_report"] = enter_report
+            context["enter_report_before1"] = enter_report_before1
+            context["enter_reportdetails"] = enter_reportdetails
+            context["enter_percentage"] = enter_percentage
+
+            context["exit_report"] = exit_report
+            context["exit_report_before1"] = exit_report_before1
+            context["exit_reportdetails"] = exit_reportdetails
+            context["exit_percentage"] = exit_percentage
+
+        elif date_range == "week":
+
+            start_date = datetime.today() - timedelta(days=1)
+            week = [start_date - timedelta(days=x) for x in range(7)][::-1]
+
+            context["labels"] = json.dumps([date.strftime("%d/%m") for date in week])
+
+            enter_report = []
+            exit_report = []
+            for date in week:
+                try:
+                    enter_report.append(
+                        entrance.reports.get(date=date, direction="entran").total
+                    )
+                    exit_report.append(
+                        entrance.reports.get(date=date, direction="salen").total
+                    )
+                except:
+                    enter_report.append(0)
+                    exit_report.append(0)
+
+            context["enter_reportdetails"] = enter_report
+            context["exit_reportdetails"] = exit_report
 
         return context
 

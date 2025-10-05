@@ -35,6 +35,9 @@ class Report(models.Model):
     )
     direction = models.CharField(_("Dirección"), max_length=6, choices=DIRECTION_TYPE)
 
+    def __str__(self):
+        return f"{self.entrance.name} ({self.date})"
+
 
 class ReportDetail(models.Model):
     report = models.ForeignKey(
