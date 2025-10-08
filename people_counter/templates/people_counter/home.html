@@ -9,7 +9,7 @@
     {% endif %}
 
     <div>
-      <form hx-get="{% url 'entrance' %}" hx-trigger="load, change from:#entrance-filter, change from:#day, change from:#week, change from:#max-date" hx-target="#entrance" class="flex items-center gap-1" id="filter-form">
+      <form hx-get="{% url 'entrance' %}" hx-trigger="load, change from:#entrance-filter, change from:#day, change from:#week, change from:#max-date" hx-target="#entrance" class="grid sm:flex items-center gap-1" id="filter-form">
         <select name="entrance" id="entrance-filter" class="border border-gray-200 rounded p-1 text-sm h-[38px] pr-8">
           <option value="all">Todas las entradas</option>
           {% for entrance in entrances %}
@@ -18,9 +18,9 @@
         </select>
         <div class="border border-gray-200 rounded h-[38px] flex items-center">
           <label class="text-sm p-2" for="max-date">Día:</label>
-          <input class="h-full p-1 text-sm" type="date" name="max-date" id="max-date" value="{{ yesterday|date:'Y-m-d' }}" max="{{ yesterday|date:'Y-m-d' }}" />
+          <input class="w-full h-full p-1 text-sm" type="date" name="max-date" id="max-date" value="{{ yesterday|date:'Y-m-d' }}" max="{{ yesterday|date:'Y-m-d' }}" />
         </div>
-        <div class="flex p-0.5 gap-1 border border-gray-200 rounded">
+        <div class="flex p-0.5 gap-1 border border-gray-200 rounded w-fit">
           <div>
             <input class="hidden peer" type="radio" name="range" id="day" value="day" checked />
             <label class="cursor-pointer block p-2 text-xs font-bold text-gray-500 rounded peer-checked:bg-gray-50" for="day">1D</label>
