@@ -1,7 +1,25 @@
-<table>
-  <tr>
-    <th>Entrada</th>
-    <th>Total entradas</th>
-    <th>Total salidas</th>
-  </tr>
-</table>
+{% load people_counter_extras %}
+<div class="overflow-x-auto overflow-y-hidden rounded-md shadow-md border border-sky-900/20">
+  <table class="w-full">
+    <tr class="border-b border-gray-200">
+      <th class="text-nowrap p-3 text-sm text-left font-bold">Entrada</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Entran (1D)</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Salen (1D)</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Entran (7D)</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Salen (7D)</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Entran % (7D)</th>
+      <th class="text-nowrap p-3 text-sm text-right font-bold">Salen % (7D)</th>
+    </tr>
+    {% for entrance in entrances %}
+      <tr class="odd:bg-gray-50">
+        <td class="text-nowrap p-2 text-sm font-semibold">{{ entrance.name }}</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_enter }}</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_exit }}</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_enter_week }}</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_exit_week }}</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_enter_week|get_percentage:total_enter_week }} %</td>
+        <td class="text-nowrap p-2 text-sm text-right">{{ entrance.total_exit_week|get_percentage:total_exit_week }} %</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>

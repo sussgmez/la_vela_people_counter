@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from pytz import timezone
 from django.shortcuts import render
-from django.db.models import Subquery, OuterRef, F
+from django.db.models import Sum, Case, When, Value, Q
 from django.views.generic import TemplateView, DetailView
 from django.core.handlers.wsgi import WSGIRequest
 from .models import File, Report, ReportDetail, Entrance
@@ -25,82 +25,177 @@ class EntranceView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        entrance = Entrance.objects.get(id=self.request.GET["entrance"])
-
         date_range = self.request.GET["range"]
-        date = datetime.strptime(self.request.GET["max-date"], "%Y-%m-%d")
 
-        enter_total = 0
-        exit_total = 0
-        prev_enter_total = 0
-        prev_exit_total = 0
+        if self.request.GET["entrance"] == "all":
+            date = datetime.strptime(self.request.GET["max-date"], "%Y-%m-%d")
+            if date_range == "day":
+                labels = json.dumps([f"{x}:00" for x in range(1, 25)])
 
-        exit_report = None
+                enter_data = []
+                exit_data = []
 
-        labels = []
-        enter_data = []
-        exit_data = []
+                for x in range(0, 24):
+                    enter_reportdetails = ReportDetail.objects.filter(
+                        report__date=date, report__direction="entran", time=f"{x}:00"
+                    ).values_list("quantity", flat=True)
+                    enter_data.append(sum(enter_reportdetails))
 
-        if date_range == "day":
-            labels = json.dumps([f"{x}:00" for x in range(1, 25)])
-            try:
-                enter_report = entrance.reports.get(date=date, direction="entran")
-                exit_report = entrance.reports.get(date=date, direction="salen")
-                enter_reportdetails = list(
-                    ReportDetail.objects.filter(report=enter_report).values_list(
-                        "quantity", flat=True
-                    )
+                    exit_reportdetails = ReportDetail.objects.filter(
+                        report__date=date, report__direction="salen", time=f"{x}:00"
+                    ).values_list("quantity", flat=True)
+                    exit_data.append(sum(exit_reportdetails))
+
+                prev_enter_total = sum(
+                    Report.objects.filter(
+                        date=date - timedelta(days=1), direction="entran"
+                    ).values_list("total", flat=True)
                 )
-                enter_data = enter_reportdetails
-                exit_reportdetails = list(
-                    ReportDetail.objects.filter(report=exit_report).values_list(
-                        "quantity", flat=True
-                    )
+                prev_exit_total = sum(
+                    Report.objects.filter(
+                        date=date - timedelta(days=1), direction="salen"
+                    ).values_list("total", flat=True)
                 )
-                exit_data = exit_reportdetails
 
-                enter_total = enter_report.total
-                exit_total = exit_report.total
+            elif date_range == "week":
+                week = [date - timedelta(days=x) for x in range(7)][::-1]
+                labels = json.dumps([date.strftime("%d/%m") for date in week])
 
-                prev_enter_total = entrance.reports.get(
-                    date=date - timedelta(1), direction="entran"
-                ).total
-                prev_exit_total = entrance.reports.get(
-                    date=date - timedelta(1), direction="salen"
-                ).total
+                enter_data = []
+                exit_data = []
 
-            except Exception as e:
-                print(e)
-
-        elif date_range == "week":
-
-            week = [date - timedelta(days=x) for x in range(7)][::-1]
-
-            labels = json.dumps([date.strftime("%d/%m") for date in week])
-
-            for date in week:
-                try:
+                for date in week:
                     enter_data.append(
-                        entrance.reports.get(date=date, direction="entran").total
+                        sum(
+                            Report.objects.filter(
+                                date=date, direction="entran"
+                            ).values_list("total", flat=True)
+                        )
                     )
                     exit_data.append(
-                        entrance.reports.get(date=date, direction="salen").total
+                        sum(
+                            Report.objects.filter(
+                                date=date, direction="salen"
+                            ).values_list("total", flat=True)
+                        )
                     )
-                except:
-                    enter_data.append(0)
-                    exit_data.append(0)
+                prev_enter_total = sum(
+                    Report.objects.filter(
+                        date__gte=date - timedelta(days=13),
+                        date__lte=date - timedelta(days=7),
+                        direction="entran",
+                    ).values_list("total", flat=True)
+                )
+                prev_exit_total = sum(
+                    Report.objects.filter(
+                        date__gte=date - timedelta(days=13),
+                        date__lte=date - timedelta(days=7),
+                        direction="salen",
+                    ).values_list("total", flat=True)
+                )
 
-            enter_total = sum(enter_data)
-            exit_total = sum(exit_data)
+            context["labels"] = labels
+            context["enter_data"] = enter_data
+            context["exit_data"] = exit_data
 
-        context["labels"] = labels
-        context["enter_data"] = enter_data
-        context["exit_data"] = exit_data
+            context["enter_total"] = sum(enter_data)
+            context["exit_total"] = sum(exit_data)
+            context["prev_enter_total"] = prev_enter_total
+            context["prev_exit_total"] = prev_exit_total
 
-        context["enter_total"] = enter_total
-        context["exit_total"] = exit_total
-        context["prev_enter_total"] = prev_enter_total
-        context["prev_exit_total"] = prev_exit_total
+        else:
+            entrance = Entrance.objects.get(id=self.request.GET["entrance"])
+
+            date = datetime.strptime(self.request.GET["max-date"], "%Y-%m-%d")
+
+            enter_total = 0
+            exit_total = 0
+            prev_enter_total = 0
+            prev_exit_total = 0
+
+            exit_report = None
+
+            labels = []
+            enter_data = []
+            exit_data = []
+
+            if date_range == "day":
+                labels = json.dumps([f"{x}:00" for x in range(1, 25)])
+                try:
+                    enter_report = entrance.reports.get(date=date, direction="entran")
+                    exit_report = entrance.reports.get(date=date, direction="salen")
+                    enter_reportdetails = list(
+                        ReportDetail.objects.filter(report=enter_report).values_list(
+                            "quantity", flat=True
+                        )
+                    )
+                    enter_data = enter_reportdetails
+                    exit_reportdetails = list(
+                        ReportDetail.objects.filter(report=exit_report).values_list(
+                            "quantity", flat=True
+                        )
+                    )
+                    exit_data = exit_reportdetails
+
+                    enter_total = enter_report.total
+                    exit_total = exit_report.total
+
+                    prev_enter_total = entrance.reports.get(
+                        date=date - timedelta(1), direction="entran"
+                    ).total
+                    prev_exit_total = entrance.reports.get(
+                        date=date - timedelta(1), direction="salen"
+                    ).total
+
+                except Exception as e:
+                    print(e)
+
+            elif date_range == "week":
+
+                week = [date - timedelta(days=x) for x in range(7)][::-1]
+
+                labels = json.dumps([date.strftime("%d/%m") for date in week])
+
+                for date in week:
+                    try:
+                        enter_data.append(
+                            entrance.reports.get(date=date, direction="entran").total
+                        )
+                        exit_data.append(
+                            entrance.reports.get(date=date, direction="salen").total
+                        )
+                    except:
+                        enter_data.append(0)
+                        exit_data.append(0)
+
+                prev_enter_total = sum(
+                    Report.objects.filter(
+                        date__gte=date - timedelta(days=13),
+                        date__lte=date - timedelta(days=7),
+                        direction="entran",
+                        entrance=entrance,
+                    ).values_list("total", flat=True)
+                )
+                prev_exit_total = sum(
+                    Report.objects.filter(
+                        date__gte=date - timedelta(days=13),
+                        date__lte=date - timedelta(days=7),
+                        direction="salen",
+                        entrance=entrance,
+                    ).values_list("total", flat=True)
+                )
+
+                enter_total = sum(enter_data)
+                exit_total = sum(exit_data)
+
+            context["labels"] = labels
+            context["enter_data"] = enter_data
+            context["exit_data"] = exit_data
+
+            context["enter_total"] = enter_total
+            context["exit_total"] = exit_total
+            context["prev_enter_total"] = prev_enter_total
+            context["prev_exit_total"] = prev_exit_total
 
         return context
 
@@ -110,6 +205,68 @@ class EntrancesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        entrances = Entrance.objects.all()
+
+        date = datetime.strptime(self.request.GET["max-date"], "%Y-%m-%d")
+
+        entrances = entrances.annotate(
+            total_enter=Sum(
+                Case(
+                    When(
+                        Q(reports__date=date) & Q(reports__direction="entran"),
+                        then="reports__total",
+                    ),
+                    default=0,
+                )
+            )
+        )
+        entrances = entrances.annotate(
+            total_exit=Sum(
+                Case(
+                    When(
+                        Q(reports__date=date) & Q(reports__direction="salen"),
+                        then="reports__total",
+                    ),
+                    default=0,
+                )
+            )
+        )
+
+        entrances = entrances.annotate(
+            total_enter_week=Sum(
+                Case(
+                    When(
+                        Q(reports__date__gte=date - timedelta(days=6))
+                        & Q(reports__date__lte=date)
+                        & Q(reports__direction="entran"),
+                        then="reports__total",
+                    ),
+                    default=0,
+                )
+            )
+        )
+        entrances = entrances.annotate(
+            total_exit_week=Sum(
+                Case(
+                    When(
+                        Q(reports__date__gte=date - timedelta(days=6))
+                        & Q(reports__date__lte=date)
+                        & Q(reports__direction="salen"),
+                        then="reports__total",
+                    ),
+                    default=0,
+                )
+            )
+        )
+
+        context["entrances"] = entrances.order_by("-total_enter")
+        context["total_enter_week"] = sum(
+            entrances.values_list("total_enter_week", flat=True)
+        )
+        context["total_exit_week"] = sum(
+            entrances.values_list("total_exit_week", flat=True)
+        )
 
         return context
 

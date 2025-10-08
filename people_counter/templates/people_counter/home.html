@@ -2,13 +2,16 @@
 
 {% block content %}
   <section class="py-8 px-4 max-w-6xl m-auto">
-    <div hx-get="{% url 'upload-file' %}" hx-trigger="load" class=""></div>
+    {% if user.is_staff %}
+      <div hx-get="{% url 'upload-file' %}" hx-trigger="load" class=""></div>
 
-    <hr class="my-4 border-gray-300" />
+      <hr class="my-4 border-gray-300" />
+    {% endif %}
 
-    <div class="">
+    <div>
       <form hx-get="{% url 'entrance' %}" hx-trigger="load, change from:#entrance-filter, change from:#day, change from:#week, change from:#max-date" hx-target="#entrance" class="flex items-center gap-1" id="filter-form">
         <select name="entrance" id="entrance-filter" class="border border-gray-200 rounded p-1 text-sm h-[38px] pr-8">
+          <option value="all">Todas las entradas</option>
           {% for entrance in entrances %}
             <option value="{{ entrance.id }}">{{ entrance.name }}</option>
           {% endfor %}
@@ -30,7 +33,7 @@
       </form>
     </div>
     <div>
-      <div id="entrance" class="!w-full lg:flex"></div>
+      <div id="entrance" class="!w-full lg:flex mb-4"></div>
       <div hx-get="{% url 'entrances' %}" hx-trigger="load, change from:#day, change from:#week" hx-include="#filter-form"></div>
     </div>
   </section>

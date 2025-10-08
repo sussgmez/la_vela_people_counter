@@ -11,12 +11,12 @@
   {% if enter_total < prev_enter_total %}
     <div class="h-20 w-full border border-red-200 rounded p-3 bg-gradient-to-br from-red-50 to-red-100">
       <p class="text-red-800">{{ enter_total|get_rate:prev_enter_total }} %</p>
-      <p class="text-xs text-red-400 font-semibold text-nowrap">Total entradas día anterior: {{ prev_enter_total }}</p>
+      <p class="text-xs text-red-400 font-semibold">Total entradas anterior: {{ prev_enter_total }}</p>
     </div>
   {% else %}
     <div class="h-20 w-full border border-green-200 rounded p-3 bg-gradient-to-br from-green-50 to-green-100">
       <p class="text-green-800">+{{ enter_total|get_rate:prev_enter_total }} %</p>
-      <p class="text-xs text-green-600 font-semibold text-nowrap">Total entradas día anterior: {{ prev_enter_total }}</p>
+      <p class="text-xs text-green-600 font-semibold">Total entradas anterior: {{ prev_enter_total }}</p>
     </div>
   {% endif %}
 
@@ -27,12 +27,12 @@
   {% if exit_total < prev_exit_total %}
     <div class="h-20 w-full border border-red-200 rounded p-3 bg-gradient-to-br from-red-50 to-red-100">
       <p class="text-red-800">{{ exit_total|get_rate:prev_exit_total }} %</p>
-      <p class="text-xs text-red-400 font-semibold text-nowrap">Total salidas día anterior: {{ prev_exit_total }}</p>
+      <p class="text-xs text-red-400 font-semibold">Total salidas anterior: {{ prev_exit_total }}</p>
     </div>
   {% else %}
     <div class="h-20 w-full border border-green-200 rounded p-3 bg-gradient-to-br from-green-50 to-green-100">
       <p class="text-green-800">+{{ exit_total|get_rate:prev_exit_total }} %</p>
-      <p class="text-xs text-green-600 font-semibold text-nowrap">Total salidas día anterior: {{ prev_exit_total }}</p>
+      <p class="text-xs text-green-600 font-semibold">Total salidas anterior: {{ prev_exit_total }}</p>
     </div>
   {% endif %}
 </div>
@@ -69,6 +69,21 @@
         title: {
           display: true,
           text: 'Entrada total de personas'
+        }
+      },
+      scales: {
+        y: {
+          // Este es el eje Y (vertical)
+          // Agrega la propiedad 'min' y establece su valor a 0
+          min: 0
+  
+          // Opcionalmente, puedes usar 'suggestedMin' si quieres que Chart.js aún calcule
+          // un buen 'max' pero garantizar que 0 esté incluido, aunque 'min: 0' es más directo.
+          // suggestedMin: 0,
+  
+          // Otras configuraciones de eje Y van aquí (títulos, ticks, etc.)
+          // beginAtZero: true, // Nota: Aunque esto existe, 'min: 0' es más robusto
+          // en versiones recientes, especialmente para datos grandes.
         }
       }
     }

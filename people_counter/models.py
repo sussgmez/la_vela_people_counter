@@ -10,6 +10,9 @@ class Entrance(models.Model):
 class File(models.Model):
     file = models.FileField(_("Archivo"), upload_to="files/", max_length=100)
 
+    def __str__(self):
+        return f"{self.file}"
+
 
 class Report(models.Model):
     DIRECTION_TYPE = [
