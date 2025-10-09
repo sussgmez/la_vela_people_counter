@@ -1,2 +1,5 @@
 .venv
 db.sqlite3
+__pycache__
+people_counter/migrations/*
+!people_counter/migrations/__init__.py
