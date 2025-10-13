@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-  <section class="py-8 px-4 max-w-6xl m-auto">
+  <section class="py-8 px-4 lg:px-16 m-auto">
     {% if user.is_staff %}
       <div hx-get="{% url 'upload-file' %}" hx-trigger="load" class=""></div>
 
@@ -34,7 +34,11 @@
     </div>
     <div>
       <div id="entrance" class="!w-full lg:flex mb-4"></div>
-      <div hx-get="{% url 'entrances' %}" hx-trigger="load, change from:#day, change from:#week" hx-include="#filter-form"></div>
+      <div hx-get="{% url 'entrances' %}" hx-trigger="load" class="mb-4"></div>
+      <div>
+        <input class="rounded border p-2 text-sm mb-2 border-gray-300" name="year_month" type="month" value="{{ year_month }}" hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month" />
+        <div id="entrances-month"></div>
+      </div>
     </div>
   </section>
 {% endblock %}

@@ -1,5 +1,8 @@
 import json
 import pandas as pd
+import calendar
+import locale
+import numpy as np
 from datetime import datetime, timedelta
 from pytz import timezone
 from django.shortcuts import render
@@ -14,8 +17,11 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["entrances"] = Entrance.objects.all()
+        context["entrances"] = Entrance.objects.all().order_by("id")
         context["yesterday"] = datetime.today() - timedelta(1)
+        context["year_month"] = (
+            f"{datetime.today().year}-{str(datetime.today().month).zfill(2)}"
+        )
         return context
 
 
@@ -208,7 +214,7 @@ class EntrancesView(TemplateView):
 
         entrances = Entrance.objects.all()
 
-        date = datetime.strptime(self.request.GET["max-date"], "%Y-%m-%d")
+        date = datetime.today() - timedelta(days=1)
 
         entrances = entrances.annotate(
             total_enter=Sum(
@@ -267,6 +273,77 @@ class EntrancesView(TemplateView):
         context["total_exit_week"] = sum(
             entrances.values_list("total_exit_week", flat=True)
         )
+
+        return context
+
+
+class EntrancesMontView(TemplateView):
+    template_name = "people_counter/entrances_month.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        year, month = self.request.GET["year_month"].split("-")
+
+        reports = (
+            Report.objects.filter(date__month=month, date__year=year)
+            .values("entrance__name", "date", "direction", "total")
+            .order_by("date", "entrance__name")
+        )
+
+        table = {}
+        days = set()
+        entrances = set()
+        directions = set()
+        total_days = {}
+
+        for report in reports:
+            entrance = report["entrance__name"]
+            date = report["date"].strftime("%Y-%m-%d")
+            total = report["total"]
+            direction = report["direction"]
+
+            days.add(date)
+            entrances.add(entrance)
+            directions.add(direction)
+
+            if entrance not in table:
+                table[entrance] = {}
+
+            if date not in table[entrance]:
+                table[entrance][date] = {}
+
+            table[entrance][date][direction] = total
+
+        for entrance in entrances:
+            total_enter = 0
+            total_exit = 0
+            for value in table.get(entrance, {}).values():
+                total_enter += value["entran"]
+                total_exit += value["salen"]
+            table[entrance]["total_enter"] = total_enter
+            table[entrance]["total_exit"] = total_exit
+
+        total_total_enter = 0
+        total_total_exit = 0
+
+        for day in days:
+            total_day_enter = 0
+            total_day_exit = 0
+            for entrance in entrances:
+                total_day_enter += table[entrance][day]["entran"]
+                total_total_enter += table[entrance][day]["entran"]
+                total_day_exit += table[entrance][day]["salen"]
+                total_total_exit += table[entrance][day]["salen"]
+
+            total_days[day] = {"enter": total_day_enter, "exit": total_day_exit}
+
+        context["days_sorted"] = sorted(list(days))
+        context["total_days"] = total_days
+        context["entrances_sorted"] = sorted(list(entrances))
+        context["table"] = table
+        context["total_total_enter"] = total_total_enter
+        context["total_total_exit"] = total_total_exit
 
         return context
 

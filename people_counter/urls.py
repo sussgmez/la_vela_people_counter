@@ -17,5 +17,10 @@ urlpatterns = [
         login_required(views.EntrancesView.as_view()),
         name="entrances",
     ),
+    path(
+        "entrances/month/",
+        login_required(views.EntrancesMontView.as_view()),
+        name="entrances-month",
+    ),
     path("upload-file/", login_required(views.upload_file), name="upload-file"),
 ]

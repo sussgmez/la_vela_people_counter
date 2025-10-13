@@ -208,6 +208,9 @@
   .fixed {
     position: fixed;
   }
+  .relative {
+    position: relative;
+  }
   .static {
     position: static;
   }
@@ -278,6 +281,9 @@
   .hidden {
     display: none;
   }
+  .table {
+    display: table;
+  }
   .\!h-96 {
     height: calc(var(--spacing) * 96) !important;
   }
@@ -286,6 +292,18 @@
   }
   .h-20 {
     height: calc(var(--spacing) * 20);
+  }
+  .h-50 {
+    height: calc(var(--spacing) * 50);
+  }
+  .h-150 {
+    height: calc(var(--spacing) * 150);
+  }
+  .h-200 {
+    height: calc(var(--spacing) * 200);
+  }
+  .h-500 {
+    height: calc(var(--spacing) * 500);
   }
   .h-\[38px\] {
     height: 38px;
@@ -298,6 +316,12 @@
   }
   .h-screen {
     height: 100vh;
+  }
+  .max-h-20 {
+    max-height: calc(var(--spacing) * 20);
+  }
+  .max-h-150 {
+    max-height: calc(var(--spacing) * 150);
   }
   .\!w-full {
     width: 100% !important;
@@ -346,6 +370,9 @@
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .overflow-auto {
+    overflow: auto;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -409,8 +436,20 @@
   .bg-gray-50 {
     background-color: var(--color-gray-50);
   }
+  .bg-gray-100 {
+    background-color: var(--color-gray-100);
+  }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
+  }
   .bg-sky-50 {
     background-color: var(--color-sky-50);
+  }
+  .bg-sky-100 {
+    background-color: var(--color-sky-100);
+  }
+  .bg-sky-200 {
+    background-color: var(--color-sky-200);
   }
   .bg-white {
     background-color: var(--color-white);
@@ -575,6 +614,12 @@
   .odd\:bg-gray-50:nth-child(odd) {
     background-color: var(--color-gray-50);
   }
+  .odd\:bg-sky-50:nth-child(odd) {
+    background-color: var(--color-sky-50);
+  }
+  .even\:bg-white:nth-child(even) {
+    background-color: var(--color-white);
+  }
   @media (hover: hover) {
     .hover\:bg-gray-100:hover {
       background-color: var(--color-gray-100);
@@ -653,6 +698,11 @@
   @media (width >= 64rem) {
     .lg\:p-0 {
       padding: calc(var(--spacing) * 0);
+    }
+  }
+  @media (width >= 64rem) {
+    .lg\:px-16 {
+      padding-inline: calc(var(--spacing) * 16);
     }
   }
   @media (width >= 64rem) {
