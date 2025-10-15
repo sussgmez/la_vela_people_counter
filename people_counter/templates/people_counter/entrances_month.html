@@ -1,17 +1,17 @@
 {% load people_counter_extras %}
 
-<div class="overflow-auto max-h-150 rounded-md shadow-md border border-sky-900/20">
+<div class="overflow-x-scroll overflow-y-hidden max-h-150 rounded-md shadow-md border border-sky-900/20">
   <table class="w-full bg-sky-100">
     <thead>
       <tr class="border-b border-sky-200">
         <th class="p-3 text-sm text-left font-bold">Fecha</th>
         <th class="p-3 text-sm text-left font-bold">Día</th>
         {% for entrance in entrances_sorted %}
-          <th class="p-3 text-sm text-left font-bold">{{ entrance }} entran</th>
-          <th class="p-3 text-sm text-left font-bold">{{ entrance }} salen</th>
+          <th class="p-3 text-sm text-left font-bold text-nowrap">{{ entrance }} (E)</th>
+          <th class="p-3 text-sm text-left font-bold text-nowrap">{{ entrance }} (S)</th>
         {% endfor %}
-        <th class="p-3 text-sm text-left font-bold">Total entradas</th>
-        <th class="p-3 text-sm text-left font-bold">Total salidas</th>
+        <th class="p-3 text-sm text-left font-bold text-nowrap">Total entradas</th>
+        <th class="p-3 text-sm text-left font-bold text-nowrap">Total salidas</th>
       </tr>
     </thead>
     <tbody>
@@ -36,7 +36,6 @@
           <td class="p-2 text-sm text-right font-semibold">{{ table|get_item:entrance|get_item:'total_enter'|default:0 }}</td>
           <td class="p-2 text-sm text-right font-semibold">{{ table|get_item:entrance|get_item:'total_exit'|default:0 }}</td>
         {% endfor %}
-
         <td class="p-2 text-sm text-right font-bold">{{ total_total_enter }}</td>
         <td class="p-2 text-sm text-right font-bold">{{ total_total_exit }}</td>
       </tr>

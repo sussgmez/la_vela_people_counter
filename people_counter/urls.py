@@ -23,4 +23,9 @@ urlpatterns = [
         name="entrances-month",
     ),
     path("upload-file/", login_required(views.upload_file), name="upload-file"),
+    path(
+        "export-entraces-month/",
+        login_required(views.export_entrances_month),
+        name="export-entrances-month",
+    ),
 ]

@@ -1,13 +1,10 @@
 import json
 import pandas as pd
-import calendar
-import locale
-import numpy as np
+from django.http import HttpResponse
 from datetime import datetime, timedelta
-from pytz import timezone
 from django.shortcuts import render
-from django.db.models import Sum, Case, When, Value, Q
-from django.views.generic import TemplateView, DetailView
+from django.db.models import Sum, Case, When, Q
+from django.views.generic import TemplateView
 from django.core.handlers.wsgi import WSGIRequest
 from .models import File, Report, ReportDetail, Entrance
 
@@ -389,3 +386,8 @@ def upload_file(request: WSGIRequest):
 
         return render(request, "people_counter/upload_file.html")
     return render(request, "people_counter/upload_file.html", context=context)
+
+
+def export_entrances_month(request):
+    print("test")
+    return HttpResponse()

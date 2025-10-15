@@ -36,7 +36,12 @@
       <div id="entrance" class="!w-full lg:flex mb-4"></div>
       <div hx-get="{% url 'entrances' %}" hx-trigger="load" class="mb-4"></div>
       <div>
-        <input class="rounded border p-2 text-sm mb-2 border-gray-300" name="year_month" type="month" value="{{ year_month }}" hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month" />
+        <div>
+          <form hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month">
+            <input class="rounded border p-2 text-sm mb-2 border-gray-300" name="year_month" type="month" value="{{ year_month }}" />
+          </form>
+          <button class="text-sm p-2 bg-sky-700 text-white rounded hover:bg-sky-800 cursor-pointer" hx-get="{% url 'export-entrances-month' %}" hx-swap="none">Exportar .xlsx</button>
+        </div>
         <div id="entrances-month"></div>
       </div>
     </div>
