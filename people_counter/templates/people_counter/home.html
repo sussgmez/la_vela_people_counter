@@ -34,10 +34,9 @@
     </div>
     <div>
       <div id="entrance" class="!w-full lg:flex mb-4"></div>
-      {% comment %} <div hx-get="{% url 'entrances' %}" hx-trigger="load" class="mb-4"></div> {% endcomment %}
       <div>
         <div>
-          <form action="{% url 'export-entrances-month' %}" hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month" class="flex gap-1 mb-2" id="form-month">
+          <form action="{% url 'export-entrances-month' %}" hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month" class="flex items-center gap-1 mb-2" id="form-month">
             <input class="rounded border p-2 text-sm border-gray-300 h-10" name="year_month" type="month" value="{{ year_month }}" />
             <div class="border border-gray-300 flex rounded p-0.5 h-10">
               <div class="h-full">
@@ -49,7 +48,7 @@
                 <label for="option2" class="inline-flex items-center px-2 py-1 text-sm rounded h-full cursor-pointer peer-checked:bg-sky-800/70 peer-checked:text-white">Salidas</label>
               </div>
             </div>
-            <button class="text-sm py-1 px-4 bg-sky-700 text-white rounded hover:bg-sky-800 cursor-pointer">Exportar .xlsx</button>
+            <button class="text-sm py-1 px-4 bg-sky-700 text-white rounded hover:bg-sky-800 cursor-pointer h-9">Exportar .xlsx</button>
           </form>
         </div>
         <div id="entrances-month"></div>
