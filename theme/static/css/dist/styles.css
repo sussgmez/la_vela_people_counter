@@ -21,10 +21,13 @@
     --color-sky-50: oklch(97.7% 0.013 236.62);
     --color-sky-100: oklch(95.1% 0.026 236.824);
     --color-sky-200: oklch(90.1% 0.058 230.902);
+    --color-sky-300: oklch(82.8% 0.111 230.318);
     --color-sky-400: oklch(74.6% 0.16 232.661);
     --color-sky-700: oklch(50% 0.134 242.749);
     --color-sky-800: oklch(44.3% 0.11 240.79);
     --color-sky-900: oklch(39.1% 0.09 240.876);
+    --color-sky-950: oklch(29.3% 0.066 243.157);
+    --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -205,6 +208,17 @@
   }
 }
 @layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
   .fixed {
     position: fixed;
   }
@@ -263,9 +277,6 @@
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
-  .mb-3 {
-    margin-bottom: calc(var(--spacing) * 3);
-  }
   .mb-4 {
     margin-bottom: calc(var(--spacing) * 4);
   }
@@ -281,6 +292,9 @@
   .hidden {
     display: none;
   }
+  .inline-flex {
+    display: inline-flex;
+  }
   .table {
     display: table;
   }
@@ -289,6 +303,9 @@
   }
   .h-9 {
     height: calc(var(--spacing) * 9);
+  }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
   }
   .h-20 {
     height: calc(var(--spacing) * 20);
@@ -332,8 +349,17 @@
   .cursor-pointer {
     cursor: pointer;
   }
+  .auto-cols-max {
+    grid-auto-columns: max-content;
+  }
+  .grid-flow-col {
+    grid-auto-flow: column;
+  }
   .grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid-cols-15 {
+    grid-template-columns: repeat(15, minmax(0, 1fr));
   }
   .flex-col {
     flex-direction: column;
@@ -353,11 +379,11 @@
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
-  .overflow-auto {
-    overflow: auto;
-  }
   .overflow-hidden {
     overflow: hidden;
+  }
+  .overflow-scroll {
+    overflow: scroll;
   }
   .overflow-x-auto {
     overflow-x: auto;
@@ -368,8 +394,8 @@
   .overflow-y-hidden {
     overflow-y: hidden;
   }
-  .overflow-y-visible {
-    overflow-y: visible;
+  .overscroll-auto {
+    overscroll-behavior: auto;
   }
   .rounded {
     border-radius: 0.25rem;
@@ -413,6 +439,22 @@
   .border-sky-800 {
     border-color: var(--color-sky-800);
   }
+  .border-sky-800\/20 {
+    border-color: color-mix(in srgb, oklch(44.3% 0.11 240.79) 20%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-sky-800\/20 {
+      border-color: color-mix(in oklab, var(--color-sky-800) 20%, transparent);
+    }
+  }
+  .border-sky-800\/80 {
+    border-color: color-mix(in srgb, oklch(44.3% 0.11 240.79) 80%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-sky-800\/80 {
+      border-color: color-mix(in oklab, var(--color-sky-800) 80%, transparent);
+    }
+  }
   .border-sky-900\/20 {
     border-color: color-mix(in srgb, oklch(39.1% 0.09 240.876) 20%, transparent);
   }
@@ -421,8 +463,14 @@
       border-color: color-mix(in oklab, var(--color-sky-900) 20%, transparent);
     }
   }
+  .border-sky-950 {
+    border-color: var(--color-sky-950);
+  }
   .bg-gray-50 {
     background-color: var(--color-gray-50);
+  }
+  .bg-gray-100 {
+    background-color: var(--color-gray-100);
   }
   .bg-sky-50 {
     background-color: var(--color-sky-50);
@@ -432,6 +480,9 @@
   }
   .bg-sky-200 {
     background-color: var(--color-sky-200);
+  }
+  .bg-sky-300 {
+    background-color: var(--color-sky-300);
   }
   .bg-sky-700 {
     background-color: var(--color-sky-700);
@@ -488,6 +539,9 @@
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
+  .p-16 {
+    padding: calc(var(--spacing) * 16);
+  }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
   }
@@ -500,20 +554,14 @@
   .py-1 {
     padding-block: calc(var(--spacing) * 1);
   }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
   }
   .pr-8 {
     padding-right: calc(var(--spacing) * 8);
-  }
-  .pb-2 {
-    padding-bottom: calc(var(--spacing) * 2);
-  }
-  .pb-4 {
-    padding-bottom: calc(var(--spacing) * 4);
-  }
-  .pb-6 {
-    padding-bottom: calc(var(--spacing) * 6);
   }
   .text-left {
     text-align: left;
@@ -567,6 +615,12 @@
   .text-nowrap {
     text-wrap: nowrap;
   }
+  .text-ellipsis {
+    text-overflow: ellipsis;
+  }
+  .whitespace-nowrap {
+    white-space: nowrap;
+  }
   .text-black {
     color: var(--color-black);
   }
@@ -602,8 +656,33 @@
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
+  .peer-checked\:bg-blue-500:is(:where(.peer):checked ~ *) {
+    background-color: var(--color-blue-500);
+  }
   .peer-checked\:bg-gray-50:is(:where(.peer):checked ~ *) {
     background-color: var(--color-gray-50);
+  }
+  .peer-checked\:bg-sky-400:is(:where(.peer):checked ~ *) {
+    background-color: var(--color-sky-400);
+  }
+  .peer-checked\:bg-sky-800\/50:is(:where(.peer):checked ~ *) {
+    background-color: color-mix(in srgb, oklch(44.3% 0.11 240.79) 50%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .peer-checked\:bg-sky-800\/50:is(:where(.peer):checked ~ *) {
+      background-color: color-mix(in oklab, var(--color-sky-800) 50%, transparent);
+    }
+  }
+  .peer-checked\:bg-sky-800\/70:is(:where(.peer):checked ~ *) {
+    background-color: color-mix(in srgb, oklch(44.3% 0.11 240.79) 70%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .peer-checked\:bg-sky-800\/70:is(:where(.peer):checked ~ *) {
+      background-color: color-mix(in oklab, var(--color-sky-800) 70%, transparent);
+    }
+  }
+  .peer-checked\:text-white:is(:where(.peer):checked ~ *) {
+    color: var(--color-white);
   }
   .file\:hidden::file-selector-button {
     display: none;

@@ -1,5 +1,8 @@
 import json
+import locale
 import pandas as pd
+import openpyxl
+import calendar
 from django.http import HttpResponse
 from datetime import datetime, timedelta
 from django.shortcuts import render
@@ -342,6 +345,8 @@ class EntrancesMontView(TemplateView):
         context["total_total_enter"] = total_total_enter
         context["total_total_exit"] = total_total_exit
 
+        context["direction"] = self.request.GET["direction"]
+
         return context
 
 
@@ -389,5 +394,52 @@ def upload_file(request: WSGIRequest):
 
 
 def export_entrances_month(request):
-    print("test")
-    return HttpResponse()
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=datos.xlsx"
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Entradas"
+
+    entrances = Entrance.objects.all().order_by("id")
+
+    columns = ["Fecha", "Día"]
+    for entrance in entrances:
+        columns.append(f"{entrance} (Entran)")
+        columns.append(f"{entrance} (Salen)")
+    columns.append("Total entradas")
+    columns.append("Total salidas")
+
+    sheet.append(columns)
+
+    year, month = request.GET["year_month"].split("-")
+
+    total_days = calendar.monthrange(int(year), int(month))[1]
+    locale.setlocale(locale.LC_ALL, "es_ES")
+    for day in range(1, total_days + 1):
+        date = datetime(year=int(year), month=int(month), day=day)
+        reports = (
+            Report.objects.filter(date=date)
+            .order_by("direction")
+            .order_by("entrance__id")
+        )
+        row = [date.strftime("%d/%m/%Y"), date.strftime("%A").upper()]
+
+        total_enter = 0
+        total_exit = 0
+        for report in reports:
+            row.append(report.total)
+            if report.direction == "entran":
+                total_enter += report.total
+            else:
+                total_exit += report.total
+
+        row.append(total_enter)
+        row.append(total_exit)
+
+        sheet.append(row)
+
+    workbook.save(response)
+
+    return response

@@ -34,13 +34,23 @@
     </div>
     <div>
       <div id="entrance" class="!w-full lg:flex mb-4"></div>
-      <div hx-get="{% url 'entrances' %}" hx-trigger="load" class="mb-4"></div>
+      {% comment %} <div hx-get="{% url 'entrances' %}" hx-trigger="load" class="mb-4"></div> {% endcomment %}
       <div>
         <div>
-          <form hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month">
-            <input class="rounded border p-2 text-sm mb-2 border-gray-300" name="year_month" type="month" value="{{ year_month }}" />
+          <form action="{% url 'export-entrances-month' %}" hx-get="{% url 'entrances-month' %}" hx-trigger="load, change" hx-target="#entrances-month" class="flex gap-1 mb-2" id="form-month">
+            <input class="rounded border p-2 text-sm border-gray-300 h-10" name="year_month" type="month" value="{{ year_month }}" />
+            <div class="border border-gray-300 flex rounded p-0.5 h-10">
+              <div class="h-full">
+                <input type="radio" id="option1" name="direction" value="entran" class="sr-only peer" checked />
+                <label for="option1" class="inline-flex items-center px-2 py-1 text-sm rounded h-full cursor-pointer peer-checked:bg-sky-800/70 peer-checked:text-white">Entradas</label>
+              </div>
+              <div class="h-full">
+                <input type="radio" id="option2" name="direction" value="salen" class="sr-only peer" />
+                <label for="option2" class="inline-flex items-center px-2 py-1 text-sm rounded h-full cursor-pointer peer-checked:bg-sky-800/70 peer-checked:text-white">Salidas</label>
+              </div>
+            </div>
+            <button class="text-sm py-1 px-4 bg-sky-700 text-white rounded hover:bg-sky-800 cursor-pointer">Exportar .xlsx</button>
           </form>
-          <button class="text-sm p-2 bg-sky-700 text-white rounded hover:bg-sky-800 cursor-pointer" hx-get="{% url 'export-entrances-month' %}" hx-swap="none">Exportar .xlsx</button>
         </div>
         <div id="entrances-month"></div>
       </div>

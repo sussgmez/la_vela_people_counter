@@ -6,6 +6,9 @@ class Entrance(models.Model):
     id = models.SmallIntegerField(_("ID"), primary_key=True)
     name = models.CharField(_("Nombre"), max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class File(models.Model):
     file = models.FileField(_("Archivo"), upload_to="files/", max_length=100)
